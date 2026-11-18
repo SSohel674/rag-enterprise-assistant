@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marginalia</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2317202E'/%3E%3Crect x='7' y='13' width='18' height='6' fill='%23FFE066'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EDF1; --page:#FFFFFF; --ink:#17202E; --muted:#5B6676; --line:#CBD3DC;
+  --rail:#17202E; --rail-ink:#E8EDF3; --rail-muted:#98A4B4; --rail-line:#2B3647;
+  --mark:#FFE066; --mark-tint:#FFF6CC; --link:#1F4FD8; --ok:#1E7A55; --warn:#B4531A; --err:#B3261E;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0E1319; --page:#161D26; --ink:#E7ECF2; --muted:#9AA6B5; --line:#2A3441;
+    --rail:#0A0E13; --mark-tint:rgba(255,224,102,.14); --link:#8FB0FF; --ok:#52C28F; --warn:#E69A5E; --err:#F2766E;}
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+.app{display:grid;grid-template-columns:288px minmax(0,1fr) 380px;height:100%}
+
+/* ---------- library rail ---------- */
+.rail{background:var(--rail);color:var(--rail-ink);padding:28px 22px;display:flex;flex-direction:column;gap:22px;overflow-y:auto}
+.brand{font-weight:700;font-size:22px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.brand i{display:block;width:22px;height:9px;background:var(--mark)}
+.rail h2{font-size:14px;font-weight:500;color:var(--rail-muted);margin:0 0 8px}
+.docs{list-style:none;margin:0;padding:0;border-top:1px solid var(--rail-line)}
+.docs li{padding:11px 0;border-bottom:1px solid var(--rail-line)}
+.docs .n{display:block;font-weight:500;word-break:break-word}
+.docs .c{font-size:13px;color:var(--rail-muted)}
+.empty-docs{color:var(--rail-muted);font-size:14px;margin:0}
+.drop{border:1.5px dashed var(--rail-line);border-radius:6px;padding:16px;text-align:center;font-size:14px;color:var(--rail-muted);transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--mark);background:rgba(255,224,102,.08);color:var(--rail-ink)}
+.btn{border:0;border-radius:5px;padding:10px 14px;font-weight:500}
+.btn-mark{background:var(--mark);color:#17202E;width:100%}
+.btn-mark:hover{background:#FFD83A}
+.btn-text{background:none;padding:6px 0;color:var(--rail-muted);text-align:left;text-decoration:underline;text-underline-offset:3px}
+.btn-text:hover{color:var(--rail-ink)}
+.btn-text.danger:hover{color:#FF9C95}
+.rail-foot{margin-top:auto;display:flex;flex-direction:column;gap:2px}
+.knob{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--rail-muted);padding-top:12px;border-top:1px solid var(--rail-line)}
+.knob b{color:var(--rail-ink);font-weight:500;min-width:2ch;text-align:center}
+.knob button{width:28px;height:28px;border-radius:5px;border:1px solid var(--rail-line);background:none;color:var(--rail-ink)}
+.knob button:hover{border-color:var(--rail-muted)}
+
+/* ---------- thread ---------- */
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.thread{flex:1;overflow-y:auto;padding:44px clamp(20px,5vw,72px) 24px}
+.thread-inner{max-width:680px;margin:0 auto}
+.intro h1{font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.02em;margin:0 0 14px;font-weight:700;max-width:18ch}
+.intro p{font-family:var(--serif);font-size:18px;line-height:1.6;color:var(--muted);margin:0;max-width:52ch}
+.entry{padding:30px 0 28px;border-bottom:1px solid var(--line);position:relative}
+.entry:first-child{padding-top:0}
+.entry.sel::before{content:"";position:absolute;left:-18px;top:30px;bottom:28px;width:4px;background:var(--mark)}
+.entry.sel:first-child::before{top:2px}
+.q{font-size:21px;line-height:1.3;font-weight:700;letter-spacing:-.01em;margin:0 0 14px}
+.ans{font-family:var(--serif);font-size:18px;line-height:1.65;max-width:64ch;padding-left:0}
+.ans p{margin:0 0 .8em}.ans p:last-child{margin-bottom:0}
+.ans ul,.ans ol{padding-left:1.3em;margin:0 0 .8em}
+.ans.refused{color:var(--muted);font-style:italic}
+.cite{font:700 12px/1 var(--sans);background:var(--mark);color:#17202E;border:0;border-radius:3px;padding:3px 5px;margin:0 1px;vertical-align:2px;position:relative}
+.cite:hover{background:#FFD83A}
+.trust{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:14px;color:var(--muted)}
+.gauge{width:56px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.gauge span{display:block;height:100%;background:var(--ok)}
+.trust.low{color:var(--warn)}.trust.low .gauge span{background:var(--warn)}
+.reading{font-size:15px;color:var(--muted)}
+.reading span{background:linear-gradient(var(--mark),var(--mark)) no-repeat left center/0% 100%;animation:sweep 1.6s ease-in-out infinite alternate;padding:2px 3px;color:var(--ink)}
+@keyframes sweep{to{background-size:100% 100%}}
+.err{color:var(--err);font-size:15px}
+
+/* ---------- composer ---------- */
+.composer{padding:14px clamp(20px,5vw,72px) 22px;background:linear-gradient(transparent,var(--bg) 30%)}
+.composer form{max-width:680px;margin:0 auto;display:flex;gap:10px;align-items:flex-end;background:var(--page);border:1px solid var(--line);border-radius:8px;padding:8px 8px 8px 16px}
+.composer form:focus-within{border-color:var(--ink)}
+.composer textarea{flex:1;border:0;outline:0;resize:none;background:none;color:var(--ink);font:inherit;font-size:17px;line-height:1.45;padding:7px 0;max-height:160px}
+.composer textarea::placeholder{color:var(--muted)}
+.send{background:var(--ink);color:var(--page);border:0;border-radius:5px;padding:10px 18px;font-weight:700}
+.send:disabled{opacity:.35;cursor:not-allowed}
+
+/* ---------- evidence ---------- */
+.evidence{background:var(--page);border-left:1px solid var(--line);padding:32px 26px;overflow-y:auto}
+.evidence h2{font-size:17px;margin:0 0 4px;font-weight:700}
+.evidence .sub{font-size:14px;color:var(--muted);margin:0 0 22px}
+.passage{border-left:3px solid var(--line);padding:2px 0 2px 16px;margin-bottom:26px;transition:border-color .15s,background .15s}
+.passage.on{border-left-color:var(--mark);background:linear-gradient(90deg,var(--mark-tint),transparent)}
+.passage .meta{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);margin-bottom:6px}
+.passage .meta b{color:var(--ink);font-weight:500;word-break:break-word}
+.passage .meta .id{display:inline-block;background:var(--mark);color:#17202E;font-weight:700;border-radius:3px;padding:1px 5px;margin-right:7px}
+.passage p{font-family:var(--serif);font-size:15.5px;line-height:1.6;margin:0;white-space:pre-wrap}
+.none{font-size:15px;color:var(--muted)}
+
+@media (max-width:1100px){.app{grid-template-columns:260px minmax(0,1fr)}.evidence{display:none}.evidence.show-narrow{display:block}}
+@media (max-width:780px){
+  html,body{height:auto}
+  .app{display:block;height:auto}
+  .rail{padding:20px;gap:16px}.rail-foot{margin-top:0}
+  .main{display:block}.thread{overflow:visible;padding:28px 20px}
+  .composer{position:sticky;bottom:0;padding:10px 12px 14px}
+  .evidence,.evidence.show-narrow{display:block;border-left:0;border-top:1px solid var(--line);padding:24px 20px 40px}
+}
+@media (prefers-reduced-motion:reduce){.reading span{animation:none;background-size:100% 100%}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail" id="rail">
+    <div class="brand"><i></i>Marginalia</div>
+    <div>
+      <h2>Your documents</h2>
+      <ul class="docs" id="docs"></ul>
+      <p class="empty-docs" id="emptyDocs">Nothing here yet.</p>
+    </div>
+    <div class="drop" id="drop">Drop PDF, DOCX, TXT or MD files here</div>
+    <div>
+      <button class="btn btn-mark" id="addBtn" type="button">Add files</button>
+      <input type="file" id="file" multiple accept=".pdf,.docx,.txt,.md" hidden>
+    </div>
+    <div class="rail-foot">
+      <button class="btn-text" id="sampleBtn" type="button">Try with sample policies</button>
+      <button class="btn-text danger" id="clearBtn" type="button">Remove all documents</button>
+      <div class="knob"><span>Passages to read</span>
+        <span style="display:flex;align-items:center;gap:8px">
+          <button type="button" id="kDown" aria-label="Fewer passages">−</button><b id="kVal">6</b><button type="button" id="kUp" aria-label="More passages">+</button>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="thread" id="thread"><div class="thread-inner" id="inner"></div></div>
+    <div class="composer">
+      <form id="form" autocomplete="off">
+        <textarea id="q" rows="1" placeholder="Ask about your documents" aria-label="Your question"></textarea>
+        <button class="send" id="send" type="submit">Ask</button>
+      </form>
+    </div>
+  </main>
+
+  <aside class="evidence" id="evidence" aria-live="polite"></aside>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const state = { docs: [], entries: [], sel: null, k: 6, busy: false };
+
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  let data = null;
+  try { data = await r.json(); } catch (_) {}
+  if (!r.ok) throw new Error((data && data.detail) || `Request failed (${r.status})`);
+  return data;
+}
+
+/* ---------- library ---------- */
+async function loadDocs() {
+  state.docs = (await api('/sources')).sources;
+  const ul = $('#docs');
+  ul.innerHTML = state.docs.map(d =>
+    `<li><span class="n">${esc(d.name)}</span><span class="c">${d.passages} passage${d.passages === 1 ? '' : 's'}</span></li>`).join('');
+  $('#emptyDocs').hidden = state.docs.length > 0;
+  $('#clearBtn').hidden = $('#docs').hidden = state.docs.length === 0;
+  $('#q').placeholder = state.docs.length ? 'Ask about your documents' : 'Add a document to start asking';
+  $('#send').disabled = state.docs.length === 0 || state.busy;
+  renderThread();
+}
+
+async function upload(fileList) {
+  if (!fileList.length) return;
+  const fd = new FormData();
+  [...fileList].forEach(f => fd.append('files', f));
+  setNote('Reading files…');
+  try { await api('/ingest', { method: 'POST', body: fd }); setNote(''); }
+  catch (e) { setNote(e.message, true); }
+  await loadDocs();
+}
+let noteEl;
+function setNote(msg, isErr) {
+  const d = $('#drop');
+  d.textContent = msg || 'Drop PDF, DOCX, TXT or MD files here';
+  d.style.color = isErr ? '#FF9C95' : '';
+}
+
+$('#addBtn').onclick = () => $('#file').click();
+$('#file').onchange = e => { upload(e.target.files); e.target.value = ''; };
+const drop = $('#drop');
+['dragenter', 'dragover'].forEach(t => window.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(t => window.addEventListener(t, e => { e.preventDefault(); if (t === 'drop' || e.target === document.documentElement) drop.classList.remove('over'); }));
+window.addEventListener('drop', e => upload(e.dataTransfer.files));
+$('#sampleBtn').onclick = async () => { setNote('Reading samples…'); try { await api('/ingest_samples', { method: 'POST' }); setNote(''); } catch (e) { setNote(e.message, true); } loadDocs(); };
+$('#clearBtn').onclick = async () => {
+  if (!confirm('Remove all documents from the library?')) return;
+  await api('/clear', { method: 'POST' });
+  state.entries = []; state.sel = null;
+  loadDocs();
+};
+$('#kUp').onclick = () => { state.k = Math.min(12, state.k + 1); $('#kVal').textContent = state.k; };
+$('#kDown').onclick = () => { state.k = Math.max(1, state.k - 1); $('#kVal').textContent = state.k; };
+
+/* ---------- answer rendering ---------- */
+function renderAnswer(text) {
+  const inline = s => s
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[(\d+)\]/g, (m, n) => `<button class="cite" type="button" data-n="${n}" aria-label="Show passage ${n}">${n}</button>`);
+  let html = '', list = null;
+  for (const raw of esc(text).split('\n')) {
+    const line = raw.trim();
+    const li = line.match(/^(?:[-*•]|\d+\.)\s+(.*)$/);
+    if (li) {
+      if (!list) { list = /^\d/.test(line) ? 'ol' : 'ul'; html += `<${list}>`; }
+      html += `<li>${inline(li[1])}</li>`; continue;
+    }
+    if (list) { html += `</${list}>`; list = null; }
+    if (line) html += `<p>${inline(line)}</p>`;
+  }
+  if (list) html += `</${list}>`;
+  return html;
+}
+
+function trustLine(r) {
+  if (r.groundedness == null) return '';
+  const pct = Math.max(0, Math.min(1, r.groundedness));
+  return r.grounded
+    ? `<div class="trust"><div class="gauge"><span style="width:${pct * 100}%"></span></div>Backed by the passages on the right</div>`
+    : `<div class="trust low"><div class="gauge"><span style="width:${pct * 100}%"></span></div>Only loosely backed by the documents. Check the passages before relying on this.</div>`;
+}
+
+function renderThread() {
+  const inner = $('#inner');
+  if (!state.entries.length) {
+    inner.innerHTML = `<div class="intro"><h1>Ask your documents. See exactly where the answer comes from.</h1>
+      <p>${state.docs.length
+        ? 'Type a question below. Every answer carries numbered markers that open the passage it was drawn from.'
+        : 'Add a PDF, Word file or text file in the library, or try the sample policies, then ask a question.'}</p></div>`;
+    return;
+  }
+  inner.innerHTML = state.entries.map((e, i) => {
+    let body;
+    if (e.pending) body = `<div class="reading"><span>Reading your documents</span></div>`;
+    else if (e.err) body = `<div class="err">${esc(e.err)}</div>`;
+    else body = `<div class="ans${e.res.groundedness == null ? ' refused' : ''}">${renderAnswer(e.res.answer)}</div>${trustLine(e.res)}`;
+    return `<section class="entry${state.sel && state.sel.i === i ? ' sel' : ''}" data-i="${i}"><h3 class="q">${esc(e.q)}</h3>${body}</section>`;
+  }).join('');
+}
+
+function renderEvidence() {
+  const ev = $('#evidence');
+  const e = state.sel && state.entries[state.sel.i];
+  if (!e || !e.res || !e.res.sources.length) {
+    ev.innerHTML = `<h2>Source passages</h2><p class="sub">The text behind each answer shows up here.</p>
+      <p class="none">${e && e.res && !e.res.sources.length ? 'Nothing in your documents matched this question closely enough, so no answer was attempted.' : ''}</p>`;
+    return;
+  }
+  ev.innerHTML = `<h2>Source passages</h2><p class="sub">${e.res.sources.length} used for “${esc(e.q.length > 60 ? e.q.slice(0, 57) + '…' : e.q)}”</p>` +
+    e.res.sources.map(s => `<div class="passage${state.sel.n === s.id ? ' on' : ''}" id="p${s.id}">
+      <div class="meta"><span><span class="id">${s.id}</span><b>${esc(s.source)}</b>, page ${s.page}</span><span>match ${s.score.toFixed(2)}</span></div>
+      <p>${esc(s.snippet)}${s.snippet.length >= 700 ? '…' : ''}</p></div>`).join('');
+  if (state.sel.n) { const el = $('#p' + state.sel.n); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+}
+
+function select(i, n = null) { state.sel = { i, n }; renderThread(); renderEvidence(); }
+
+$('#inner').addEventListener('click', ev => {
+  const entry = ev.target.closest('.entry'); if (!entry) return;
+  const cite = ev.target.closest('.cite');
+  select(+entry.dataset.i, cite ? +cite.dataset.n : null);
+  if (cite) document.getElementById('evidence').classList.add('show-narrow');
+});
+
+/* ---------- asking ---------- */
+async function ask(question) {
+  state.busy = true; $('#send').disabled = true;
+  const entry = { q: question, pending: true };
+  state.entries.push(entry);
+  state.sel = { i: state.entries.length - 1, n: null };
+  renderThread(); renderEvidence();
+  scrollEnd();
+  try {
+    entry.res = await api('/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, top_k: state.k }) });
+  } catch (e) { entry.err = e.message; }
+  entry.pending = false;
+  state.busy = false; $('#send').disabled = state.docs.length === 0;
+  renderThread(); renderEvidence(); scrollEnd();
+}
+function scrollEnd() { const t = $('#thread'); requestAnimationFrame(() => { t.scrollTop = t.scrollHeight; if (innerWidth <= 780) window.scrollTo(0, document.body.scrollHeight); }); }
+
+const qBox = $('#q');
+qBox.addEventListener('input', () => { qBox.style.height = 'auto'; qBox.style.height = Math.min(qBox.scrollHeight, 160) + 'px'; });
+qBox.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#form').requestSubmit(); } });
+$('#form').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = qBox.value.trim();
+  if (v.length < 3 || state.busy || !state.docs.length) return;
+  qBox.value = ''; qBox.style.height = 'auto';
+  ask(v);
+});
+
+loadDocs().then(renderEvidence);
+</script>
+</body>
+</html>

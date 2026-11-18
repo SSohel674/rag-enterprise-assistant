@@ -1,0 +1,8 @@
+[
+  {"question": "How many days of annual leave do employees get?", "expected_source": "hr_leave_policy.md", "expected_keywords": ["24"]},
+  {"question": "How many unused leave days can be carried forward?", "expected_source": "hr_leave_policy.md", "expected_keywords": ["10"]},
+  {"question": "How long is maternity leave?", "expected_source": "hr_leave_policy.md", "expected_keywords": ["26"]},
+  {"question": "How soon must a security incident be reported?", "expected_source": "it_security_policy.md", "expected_keywords": ["1 hour"]},
+  {"question": "How often do passwords expire?", "expected_source": "it_security_policy.md", "expected_keywords": ["90"]},
+  {"question": "After how many minutes does the laptop screen lock?", "expected_source": "it_security_policy.md", "expected_keywords": ["5 minutes"]}
+]
